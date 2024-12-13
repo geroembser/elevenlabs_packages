@@ -102,6 +102,7 @@ export class Conversation {
   private lastInterruptTimestamp: number = 0;
   private mode: Mode = "listening";
   private status: Status = "connecting";
+  private muteInput: boolean = false;
   private inputFrequencyData?: Uint8Array;
   private outputFrequencyData?: Uint8Array;
   private volume: number = 1;
@@ -307,6 +308,10 @@ export class Conversation {
   };
 
   private onInputWorkletMessage = (event: MessageEvent): void => {
+    if (this.muteInput) {
+      return;
+    }
+
     const rawAudioPcmData = event.data[0];
     const maxVolume = event.data[1];
 
@@ -421,6 +426,14 @@ export class Conversation {
     });
     this.lastFeedbackEventId = this.currentEventId;
     this.updateCanSendFeedback();
+  };
+
+  public setMuteInput = (mute: boolean) => {
+    this.muteInput = mute;
+  };
+
+  public isInputMuted = () => {
+    return this.muteInput;
   };
 }
 
